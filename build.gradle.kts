@@ -1,7 +1,9 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
 repositories {
@@ -10,7 +12,7 @@ repositories {
 }
 
 internal val coroutinesVersion = "1.6.4"
-internal val arrowKtVersion = "1.0.1"
+internal val ktorVersion = "2.1.1"
 internal val saveVersion = "0.3.0-SNAPSHOT"
 internal val junitVersion = "5.9.0"
 internal val assertjVersion = "3.23.1"
@@ -18,15 +20,10 @@ internal val assertjVersion = "3.23.1"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-    implementation("io.arrow-kt:arrow-core:$arrowKtVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
-    /*
-     * save-cloud-* projects have incorrectly generated POMs; that's why we
-     * explicitly list the whole hierarchy.
-     */
     implementation("com.saveourtool.save:save-cloud-api:$saveVersion")
-    implementation("com.saveourtool.save:save-cloud-common:$saveVersion")
-    implementation("com.saveourtool.save:save-cloud-common-jvm:$saveVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
@@ -60,8 +57,17 @@ internal val Test.systemPropertyIfNotNull: (key: String, lazyValue: () -> String
         }
     }
 
-tasks.test {
+tasks.withType<Test> {
     useJUnitPlatform()
+
+    testLogging {
+        showStandardStreams = true
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = FULL
+        events("passed", "skipped")
+    }
 
     filter {
         includeTestsMatching("com.saveourtool.save.*")
@@ -71,7 +77,17 @@ tasks.test {
      * Propagate certain Gradle properties to the tests, falling back to system
      * properties of the same name.
      */
-    sequenceOf("save-cloud.backend.url", "gpr.user", "gpr.key").forEach { key ->
+    sequenceOf(
+        "save-cloud.backend.url",
+        "save-cloud.user",
+        "save-cloud.user.auth.source",
+        "save-cloud.password",
+        "save-cloud.test.suite.ids",
+        "save-cloud.test.version",
+        "save-cloud.test.language",
+        "save-cloud.use.external.files",
+        "save-cloud.contest.name",
+    ).forEach { key ->
         systemPropertyIfNotNull(key) {
             gradleOrSystemProperty(key)
         }

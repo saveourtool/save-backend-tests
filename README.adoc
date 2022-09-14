@@ -1,0 +1,26 @@
+The following properties control the behavior of the tests:
+
+* `save-cloud.backend.url`
+* `save-cloud.user`
+* `save-cloud.user.auth.source`
+* `save-cloud.password`
+* `save-cloud.test.suite.ids`
+* `save-cloud.test.version`
+* `save-cloud.test.language`
+* `save-cloud.use.external.files`
+* `save-cloud.contest.name`
+
+During the build process, they may be specified as either a _Gradle_ or a Java
+_System_ property.
+
+[source,bash]
+----
+./gradlew build -Dsave-cloud.backend.url=https://saveourtool.com
+----
+
+is equivalent to
+
+[source,bash]
+----
+./gradlew build -Psave-cloud.backend.url=https://saveourtool.com
+----
