@@ -8,11 +8,10 @@ import com.saveourtool.save.api.github.DownloadedAsset
 import com.saveourtool.save.api.github.GitHubClient
 import com.saveourtool.save.api.github.GitHubProject
 import com.saveourtool.save.api.github.div
+import com.saveourtool.save.domain.FileInfo
 import com.saveourtool.save.domain.Jdk
 import com.saveourtool.save.domain.ProjectCoordinates
-import com.saveourtool.save.domain.ShortFileInfo
 import com.saveourtool.save.entities.ContestDto
-import com.saveourtool.save.entities.RunExecutionRequest
 import com.saveourtool.save.execution.ExecutionDto
 import com.saveourtool.save.execution.ExecutionStatus.FINISHED
 import com.saveourtool.save.execution.ExecutionStatus.PENDING
@@ -21,6 +20,7 @@ import com.saveourtool.save.execution.TestingType
 import com.saveourtool.save.execution.TestingType.CONTEST_MODE
 import com.saveourtool.save.execution.TestingType.PRIVATE_TESTS
 import com.saveourtool.save.execution.TestingType.PUBLIC_TESTS
+import com.saveourtool.save.request.CreateExecutionRequest
 import com.saveourtool.save.testsuite.TestSuiteDto
 import com.saveourtool.save.utils.getLogger
 import arrow.core.flatMap
@@ -169,14 +169,14 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
 
                 LOGGER.debug("Found ${files.size} file(s):")
-                files.forEachIndexed { index, (name, uploadedMillis, sizeBytes) ->
-                    val fileAgeMillis = System.currentTimeMillis() - uploadedMillis
+                files.forEachIndexed { index, file ->
+                    val fileAgeMillis = System.currentTimeMillis() - file.key.uploadedMillis
                     val fileAge = Duration.ofMillis(fileAgeMillis)
                     assertThat(fileAge.isNegative)
-                        .describedAs("The age of $name is negative")
+                        .describedAs("The age of ${file.name} is negative")
                         .isFalse
 
-                    LOGGER.debug("\t$index: $name, size $sizeBytes byte(s), uploaded ${fileAge.toDays()} day(s) ago")
+                    LOGGER.debug("\t$index: ${file.name}, size ${file.sizeBytes} byte(s), uploaded ${fileAge.toDays()} day(s) ago")
                 }
             }
         }
@@ -299,13 +299,13 @@ class SaveBackendTest {
         }
 
         try {
-            val executionRequest = RunExecutionRequest(
+            val executionRequest = CreateExecutionRequest(
                 projectCoordinates = ProjectCoordinates(
                     organizationName,
                     projectName,
                 ),
                 testSuiteIds = testSuites.asSequence().map(TestSuiteDto::id).filterNotNull().toList(),
-                files = files.map(ShortFileInfo::toStorageKey),
+                files = files.map(FileInfo::key),
                 sdk = Jdk(version = "11"),
                 testingType = testingType,
                 contestName = contest?.name
@@ -337,7 +337,7 @@ class SaveBackendTest {
                 .isGreaterThan(0L)
         } finally {
             files.forEach { file ->
-                organization.deleteFile(projectName, file)
+                organization.deleteFile(projectName, file.key)
                     .getOrHandle(SaveCloudError::fail)
             }
         }
