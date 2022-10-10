@@ -12,20 +12,20 @@ jobs:
     name: 'Build'
     runs-on: ubuntu-latest
 
-  steps:
-    - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: 'Set up Java 17'
-      uses: actions/setup-java@v3
-      with:
-        distribution: zulu
-        java-version: 17
+      - name: 'Set up Java 17'
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
 
-    - name: 'Set up Gradle'
-      uses: gradle/gradle-build-action@v2
+      - name: 'Set up Gradle'
+        uses: gradle/gradle-build-action@v2
 
-    - name: 'Execute Gradle build'
-      run: ./gradlew build -x test
+      - name: 'Execute Gradle build'
+        run: ./gradlew build -x test
 
-    - name: 'diKTat Check'
-      run: ./gradlew diktatCheck
+      - name: 'diKTat Check'
+        run: ./gradlew diktatCheck
