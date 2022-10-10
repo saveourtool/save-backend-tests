@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.3"
 }
 
 repositories {
@@ -92,4 +93,15 @@ tasks.withType<Test> {
             gradleOrSystemProperty(key)
         }
     }
+}
+
+diktat {
+    inputs {
+        include("src/**/*.kt")
+    }
+    diktatConfigFile = file("${rootDir.path}/diktat-analysis.yml")
+    /*
+     * Leave enabled to see the number of errors in the output of Gradle.
+     */
+    debug = true
 }
