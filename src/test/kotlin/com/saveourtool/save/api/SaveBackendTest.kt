@@ -73,9 +73,9 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
                     .assertNonEmpty("No organizations found")
 
-                LOGGER.debug("Found ${organizations.size} organization(s):")
+                logger.debug("Found ${organizations.size} organization(s):")
                 organizations.forEachIndexed { index, organization ->
-                    LOGGER.debug("\t$index: $organization")
+                    logger.debug("\t$index: $organization")
                 }
             }
         }
@@ -90,14 +90,15 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
                     .firstOrNull { (name) ->
                         name == organizationName
-                    }.assertNonNull("An organization named \"$organizationName\" not found or not accessible")
+                    }
+                    .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listProjects()
                     .getOrHandle(SaveCloudError::fail)
                     .assertNonEmpty("No projects found")
 
-                LOGGER.debug("Found ${projects.size} project(s):")
+                logger.debug("Found ${projects.size} project(s):")
                 projects.forEachIndexed { index, project ->
-                    LOGGER.debug("\t$index: $project")
+                    logger.debug("\t$index: $project")
                 }
             }
         }
@@ -112,14 +113,15 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
                     .firstOrNull { (name) ->
                         name == organizationName
-                    }.assertNonNull("An organization named \"$organizationName\" not found or not accessible")
+                    }
+                    .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
                     .getOrHandle(SaveCloudError::fail)
                     .assertNonEmpty("No test suites found")
 
-                LOGGER.debug("Found ${testSuites.size} test suite(s):")
+                logger.debug("Found ${testSuites.size} test suite(s):")
                 testSuites.asSequence().sortedBy(TestSuiteDto::id).forEach { testSuite ->
-                    LOGGER.debug("\t${testSuite.id}: $testSuite")
+                    logger.debug("\t${testSuite.id}: $testSuite")
                 }
             }
         }
@@ -134,15 +136,16 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
                     .firstOrNull { (name) ->
                         name == organizationName
-                    }.assertNonNull("An organization named \"$organizationName\" not found or not accessible")
+                    }
+                    .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
                     .getOrHandle(SaveCloudError::fail)
                     .filtered()
                     .assertNonEmpty("No test suites found")
 
-                LOGGER.debug("Filtered ${testSuites.size} test suite(s):")
+                logger.debug("Filtered ${testSuites.size} test suite(s):")
                 testSuites.asSequence().sortedBy(TestSuiteDto::id).forEach { testSuite ->
-                    LOGGER.debug("\t${testSuite.id}: $testSuite")
+                    logger.debug("\t${testSuite.id}: $testSuite")
                 }
             }
         }
@@ -163,12 +166,13 @@ class SaveBackendTest {
                     .getOrHandle(SaveCloudError::fail)
                     .firstOrNull { (name) ->
                         name == projectName
-                    }.assertNonNull("A project named \"$projectName\" not found or not accessible")
+                    }
+                    .assertNonNull("A project named \"$projectName\" not found or not accessible")
 
                 val files = organization.listFiles(project.name)
                     .getOrHandle(SaveCloudError::fail)
 
-                LOGGER.debug("Found ${files.size} file(s):")
+                logger.debug("Found ${files.size} file(s):")
                 files.forEachIndexed { index, file ->
                     val fileAgeMillis = System.currentTimeMillis() - file.key.uploadedMillis
                     val fileAge = Duration.ofMillis(fileAgeMillis)
@@ -176,7 +180,7 @@ class SaveBackendTest {
                         .describedAs("The age of ${file.name} is negative")
                         .isFalse
 
-                    LOGGER.debug("\t$index: ${file.name}, size ${file.sizeBytes} byte(s), uploaded ${fileAge.toDays()} day(s) ago")
+                    logger.debug("\t$index: ${file.name}, size ${file.sizeBytes} byte(s), uploaded ${fileAge.toDays()} day(s) ago")
                 }
             }
         }
@@ -202,9 +206,9 @@ class SaveBackendTest {
                 }.getOrHandle(SaveCloudError::fail)
                     .assertNonEmpty("No contests found")
 
-                LOGGER.debug("Found ${contests.size} contest(s):")
+                logger.debug("Found ${contests.size} contest(s):")
                 contests.forEachIndexed { index, contest ->
-                    LOGGER.debug("\t$index: $contest")
+                    logger.debug("\t$index: $contest")
                 }
             }
         }
@@ -247,16 +251,19 @@ class SaveBackendTest {
 
                         organization.listActiveContests(project.name)
                     }
-                }.getOrHandle(SaveCloudError::fail)
+                }
+                    .getOrHandle(SaveCloudError::fail)
                     .firstOrNull { (name) ->
                         name == contestName
-                    }.assertNonNull("A contest named \"$contestName\" not found or not accessible")
+                    }
+                    .assertNonNull("A contest named \"$contestName\" not found or not accessible")
 
                 doTest(tmpDir, contest = contest)
             }
         }
     }
 
+    @Suppress("TOO_LONG_FUNCTION")
     private suspend fun SaveCloudClientEx.doTest(
         tmpDir: Path,
         testingType: TestingType = CONTEST_MODE,
@@ -274,7 +281,8 @@ class SaveBackendTest {
             .getOrHandle(SaveCloudError::fail)
             .firstOrNull { (name) ->
                 name == projectName
-            }.assertNonNull("A project named \"$projectName\" not found or not accessible")
+            }
+            .assertNonNull("A project named \"$projectName\" not found or not accessible")
 
         val testSuites = organization.listTestSuites()
             .getOrHandle(SaveCloudError::fail)
@@ -286,7 +294,7 @@ class SaveBackendTest {
                 downloadDir = tmpDir,
                 *gitHubProjects.toTypedArray()
             ).map { asset ->
-                LOGGER.debug("Uploading $asset...")
+                logger.debug("Uploading $asset...")
                 organization.uploadFile(
                     project.name,
                     asset.localFile,
@@ -304,7 +312,10 @@ class SaveBackendTest {
                     organizationName,
                     projectName,
                 ),
-                testSuiteIds = testSuites.asSequence().map(TestSuiteDto::id).filterNotNull().toList(),
+                testSuiteIds = testSuites.asSequence()
+                    .map(TestSuiteDto::id)
+                    .filterNotNull()
+                    .toList(),
                 files = files.map(FileInfo::key),
                 sdk = Jdk(version = "11"),
                 testingType = testingType,
@@ -314,7 +325,7 @@ class SaveBackendTest {
             val executionId = submitExecution(executionRequest)
                 .getOrHandle(SaveCloudError::fail)
                 .id
-            LOGGER.debug("Waiting for execution (id = $executionId) to complete...")
+            logger.debug("Waiting for execution (id = $executionId) to complete...")
 
             var execution: ExecutionDto
             val nanos = measureNanoTime {
@@ -324,7 +335,8 @@ class SaveBackendTest {
                     delay(POLL_DELAY_MILLIS)
                 } while (execution.status in arrayOf(PENDING, RUNNING))
             }
-            LOGGER.debug("The execution (id = $executionId) has completed in ${nanos / 1000L / 1e3} ms.")
+            @Suppress("FLOAT_IN_ACCURATE_CALCULATIONS")
+            logger.debug("The execution (id = $executionId) has completed in ${nanos / 1000L / 1e3} ms.")
 
             /*
              * Requires that the orchestrator and the preprocessor are running, too.
@@ -344,35 +356,25 @@ class SaveBackendTest {
     }
 
     companion object {
-        private const val DEFAULT_BACKEND_URL = "http://localhost:5800"
-
-        private const val DEFAULT_USER = "admin"
-
-        private const val DEFAULT_PASSWORD = ""
-
+        @Suppress("GENERIC_VARIABLE_WRONG_DECLARATION")
+        private val logger = getLogger<SaveBackendTest>()
         private const val DEFAULT_AUTHORIZATION_SOURCE = "basic"
-
+        private const val DEFAULT_BACKEND_URL = "http://localhost:5800"
         private const val DEFAULT_ORGANIZATION_NAME = "CQFN.org"
-
+        private const val DEFAULT_PASSWORD = ""
         private const val DEFAULT_PROJECT_NAME = "Diktat"
-
-        private const val DEFAULT_TEST_VERSION = "master"
-
         private const val DEFAULT_TEST_LANGUAGE = "Kotlin"
-
+        private const val DEFAULT_TEST_VERSION = "master"
+        private const val DEFAULT_USER = "admin"
         private const val DEFAULT_USE_EXTERNAL_FILES = true
-
-        private const val TEST_TIMEOUT_MINUTES = 5L
-
         private const val POLL_DELAY_MILLIS = 100L
-
-        private val LOGGER = getLogger<SaveBackendTest>()
-
+        private const val TEST_TIMEOUT_MINUTES = 5L
         private val gitHubProjects = listOf(
             GitHubProject("saveourtool" / "diktat"),
             GitHubProject("pinterest" / "ktlint", tag = "0.46.1")
         )
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val backendUrl: String
             get() {
                 val backendUrlOrEmpty = System.getProperty("save-cloud.backend.url", DEFAULT_BACKEND_URL)
@@ -383,6 +385,7 @@ class SaveBackendTest {
                 }
             }
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val user: String
             get() =
                 System.getProperty("save-cloud.user", DEFAULT_USER)
@@ -390,22 +393,27 @@ class SaveBackendTest {
         /**
          * @return either the password or the _personal access token_.
          */
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val passwordOrToken: String
             get() =
                 System.getProperty("save-cloud.password", DEFAULT_PASSWORD)
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val authorizationSource: String
             get() =
                 System.getProperty("save-cloud.user.auth.source", DEFAULT_AUTHORIZATION_SOURCE)
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val organizationName: String
             get() =
                 DEFAULT_ORGANIZATION_NAME
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val projectName: String
             get() =
                 DEFAULT_PROJECT_NAME
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val contestName: String?
             get() {
                 val rawContestName = System.getProperty("save-cloud.contest.name")
@@ -418,6 +426,10 @@ class SaveBackendTest {
                 return rawContestName
             }
 
+        @Suppress(
+            "NO_CORRESPONDING_PROPERTY",
+            "CUSTOM_GETTERS_SETTERS",
+        )
         private val testSuiteIds: Set<Long>
             get() {
                 val rawTestSuiteIds = System.getProperty("save-cloud.test.suite.ids")
@@ -431,6 +443,7 @@ class SaveBackendTest {
                     .toSet()
             }
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val testVersion: String?
             get() {
                 val rawTestVersion = System.getProperty("save-cloud.test.version", DEFAULT_TEST_VERSION)
@@ -442,6 +455,7 @@ class SaveBackendTest {
                 }
             }
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val testLanguage: String?
             get() {
                 val rawTestLanguage = System.getProperty("save-cloud.test.language", DEFAULT_TEST_LANGUAGE)
@@ -453,6 +467,7 @@ class SaveBackendTest {
                 }
             }
 
+        @Suppress("CUSTOM_GETTERS_SETTERS")
         private val useExternalFiles: Boolean
             get() =
                 System.getProperty(
@@ -479,6 +494,7 @@ class SaveBackendTest {
                 .describedAs("Test suite selector not specified: version = $testVersion, language = $testLanguage, test suite ids = $testSuiteIds")
                 .isTrue
 
+            @Suppress("NO_BRACES_IN_CONDITIONALS_AND_LOOPS")
             val predicate: TestSuiteDto.() -> Boolean = when {
                 selectById -> {
                     {
