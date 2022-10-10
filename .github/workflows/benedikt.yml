@@ -1,0 +1,21 @@
+name: 'diKTat Check (Benedikt)'
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  diktat_check:
+    name: 'diKTat Check'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: diktat
+        name: 'diKTat Check'
+        uses: saveourtool/benedikt@v1
+        with:
+          input-paths: |
+            **/*.kt
