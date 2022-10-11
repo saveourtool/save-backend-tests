@@ -26,6 +26,8 @@ jobs:
 
       - name: 'Execute Gradle build'
         run: ./gradlew build -x test
+        shell: bash
 
       - name: 'diKTat Check'
         run: ./gradlew diktatCheck
+        shell: bash

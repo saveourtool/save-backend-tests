@@ -3,6 +3,12 @@ name: 'Integration Test'
 on:
   workflow_dispatch:
   schedule:
+    # When updating the cron schedule here, be sure to also change the user from
+    # `github.actor` to either `github.repository_owner` or a hard-coded value.
+    #
+    # This is because the latest user who creates the schedule trigger will be
+    # the actor for the schedule workflow, see
+    # <https://github.com/orgs/community/discussions/25067> for more details.
     - cron: 30 16 * * * # 16:30 UTC (19:30 MSK)
 
 jobs:
@@ -30,7 +36,14 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: 'Integration Test'
-        run: ./gradlew -Dsave-cloud.backend.url=https://saveourtool.com build
+        run: >
+          ./gradlew
+          -Dsave-cloud.backend.url=https://saveourtool.com
+          -Dsave-cloud.user=github@${{ github.actor }}
+          -Dsave-cloud.password=${{ secrets.SAVE_CLOUD_PASSWORD }}
+          -Dsave-cloud.user.auth.source=github
+          build
+        shell: bash
 
         # This step needs a Git repository, so it's impossible to extract it
         # into a separate job (or, otherwise, we'd need to upload the content
