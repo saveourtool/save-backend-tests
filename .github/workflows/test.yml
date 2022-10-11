@@ -3,7 +3,7 @@ name: 'Integration Test'
 on:
   workflow_dispatch:
   schedule:
-    - cron: 0 0 * * * # daily
+    - cron: 30 16 * * * # 16:30 UTC (19:30 MSK)
 
 jobs:
   test:
