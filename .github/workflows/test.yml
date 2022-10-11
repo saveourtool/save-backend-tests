@@ -6,9 +6,16 @@ on:
     - cron: 0 0 * * * # daily
 
 jobs:
-  build:
+  test:
     name: 'Integration Test'
     runs-on: ubuntu-latest
+
+    # A possible workaround for <https://github.com/dorny/test-reporter/issues/168>.
+    permissions:
+      checks: write
+      contents: write
+      pull-requests: write
+      statuses: write
 
     steps:
       - uses: actions/checkout@v3
@@ -23,4 +30,54 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: 'Integration Test'
-        run: ./gradlew build --dry-run
+        run: ./gradlew -Dsave-cloud.backend.url=https://saveourtool.com build
+
+        # This step needs a Git repository, so it's impossible to extract it
+        # into a separate job (or, otherwise, we'd need to upload the content
+        # of the whole `.git` folder as an artifact).
+      - name: 'JUnit Tests (dorny/test-reporter)'
+        uses: dorny/test-reporter@v1
+        if: ${{ always() }}
+        with:
+          name: 'JUnit Tests (dorny/test-reporter)'
+          # Comma-separated values.
+          path: "**/build/test-results/*/TEST-*.xml"
+          reporter: java-junit
+        # Ignore the "Resource not accessible by integration" error when a PR
+        # originates from a non-collaborator. This is
+        # <https://github.com/dorny/test-reporter/issues/168> which may be
+        # potentially fixed with <https://github.com/dorny/test-reporter/pull/174>.
+        continue-on-error: true
+
+      - name: 'Upload test results'
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: xml-test-reports
+          path: |
+            **/build/test-results/*/TEST-*.xml
+          retention-days: 1
+
+  report:
+    name: 'Publish JUnit test results'
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/download-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: xml-test-reports
+
+        # Uses Docker, that's why Linux-only.
+      - name: 'JUnit Tests (EnricoMi/publish-unit-test-result-action)'
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          check_name: 'JUnit Tests (EnricoMi/publish-unit-test-result-action)'
+          files: |
+            **/build/test-results/*/TEST-*.xml
