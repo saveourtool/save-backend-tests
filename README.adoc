@@ -1,3 +1,16 @@
+= Integration tests for https://github.com/saveourtool/save-cloud:[_SAVE-Cloud_]
+:toc:
+:imagesdir: docs/images
+
+[.float-group]
+--
+[.left]
+image::https://img.shields.io/badge/License-MIT-yellow.svg[License: MIT,link="https://opensource.org/licenses/MIT"]
+
+[.left]
+image::https://github.com/0x6675636b796f75676974687562/save-backend-tests/actions/workflows/test.yml/badge.svg?branch=master[,link="https://github.com/0x6675636b796f75676974687562/save-backend-tests/actions/workflows/test.yml?query=branch%3Amaster"]
+--
+
 The following properties control the behavior of the tests:
 
 * `save-cloud.backend.url`
