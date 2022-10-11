@@ -1,4 +1,4 @@
-= Integration tests for https://github.com/saveourtool/save-cloud:[_SAVE-Cloud_]
+= Integration tests for https://github.com/saveourtool/save-cloud[_SAVE-Cloud_]
 :toc:
 :imagesdir: docs/images
 
