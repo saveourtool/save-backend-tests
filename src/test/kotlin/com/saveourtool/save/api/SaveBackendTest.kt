@@ -38,6 +38,7 @@ import java.net.URL
 import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.system.measureNanoTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -47,7 +48,10 @@ class SaveBackendTest {
 
     @BeforeEach
     fun before() {
-        client = SaveCloudClientEx(URL(backendUrl)) {
+        client = SaveCloudClientEx(
+            URL(backendUrl),
+            requestTimeoutMillis = SECONDS.toMillis(500L)
+        ) {
             basic {
                 sendWithoutRequest { requestBuilder ->
                     requestBuilder.headers {
