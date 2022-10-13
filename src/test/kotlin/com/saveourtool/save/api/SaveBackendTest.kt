@@ -372,7 +372,7 @@ class SaveBackendTest {
         private const val DEFAULT_USER = "admin"
         private const val DEFAULT_USE_EXTERNAL_FILES = true
         private const val POLL_DELAY_MILLIS = 100L
-        private const val TEST_TIMEOUT_MINUTES = 5L
+        private const val TEST_TIMEOUT_MINUTES = 20L
         private val gitHubProjects = listOf(
             GitHubProject("saveourtool" / "diktat"),
             GitHubProject("pinterest" / "ktlint", tag = "0.46.1")
