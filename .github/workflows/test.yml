@@ -43,6 +43,7 @@ jobs:
           -Dsave-cloud.password=${{ secrets.SAVE_CLOUD_PASSWORD }}
           -Dsave-cloud.user.auth.source=github
           -Dsave-cloud.contest.name=new1
+          -Dsave-cloud.test.version=save-integration-test
           build
         shell: bash
 
