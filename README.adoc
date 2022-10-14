@@ -8,7 +8,7 @@
 image::https://img.shields.io/badge/License-MIT-yellow.svg[License: MIT,link="https://opensource.org/licenses/MIT"]
 
 [.left]
-image::https://github.com/0x6675636b796f75676974687562/save-backend-tests/actions/workflows/test.yml/badge.svg?branch=master[,link="https://github.com/0x6675636b796f75676974687562/save-backend-tests/actions/workflows/test.yml?query=branch%3Amaster"]
+image::https://github.com/saveourtool/save-backend-tests/actions/workflows/test.yml/badge.svg?branch=master[,link="https://github.com/saveourtool/save-backend-tests/actions/workflows/test.yml?query=branch%3Amaster"]
 --
 
 The following properties control the behavior of the tests:
