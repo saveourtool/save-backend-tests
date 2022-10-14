@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.10"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.3"
 }
 
