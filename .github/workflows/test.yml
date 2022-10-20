@@ -39,7 +39,7 @@ jobs:
         run: >
           ./gradlew
           -Dsave-cloud.backend.url=https://saveourtool.com
-          -Dsave-cloud.user=github@${{ github.actor }}
+          -Dsave-cloud.user=github@${{ secrets.SAVE_CLOUD_USER }}
           -Dsave-cloud.password=${{ secrets.SAVE_CLOUD_PASSWORD }}
           -Dsave-cloud.user.auth.source=github
           -Dsave-cloud.contest.name=new1
