@@ -87,6 +87,7 @@ tasks.withType<Test> {
         "save-cloud.test.version",
         "save-cloud.test.language",
         "save-cloud.use.external.files",
+        "save-cloud.project.name",
         "save-cloud.contest.name",
     ).forEach { key ->
         systemPropertyIfNotNull(key) {
