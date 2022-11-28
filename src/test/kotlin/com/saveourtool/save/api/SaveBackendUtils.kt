@@ -98,6 +98,13 @@ internal val testLanguage: String?
         }
     }
 
+/**
+ * @return the list of test suites, filtered either by id, or by source code
+ *   version and programming language.
+ * @see testSuiteIds
+ * @see testVersion
+ * @see testLanguage
+ */
 internal fun List<TestSuiteDto>.filtered(): List<TestSuiteDto> {
     val selectById = testSuiteIds.isNotEmpty()
     val selectByVersionAndLanguage = testVersion != null && testLanguage != null

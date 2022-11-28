@@ -169,13 +169,11 @@ class SaveBackendTest {
                 ).toBooleanStrict()
 
         private lateinit var client: SaveCloudClientEx
-
         private lateinit var organization: Organization
-
         private lateinit var project: Project
-
         private lateinit var files: List<FileInfo>
 
+        @Suppress("TOO_LONG_FUNCTION")
         @JvmStatic
         @BeforeAll
         fun beforeAll(@TempDir tmpDir: Path) {
