@@ -21,6 +21,7 @@ The following properties control the behavior of the tests:
 * `save-cloud.test.version`
 * `save-cloud.test.language`
 * `save-cloud.use.external.files`
+* `save-cloud.project.name`
 * `save-cloud.contest.name`
 
 During the build process, they may be specified as either a _Gradle_ or a Java

@@ -13,7 +13,7 @@ import com.saveourtool.save.domain.Jdk
 import com.saveourtool.save.domain.ProjectCoordinates
 import com.saveourtool.save.entities.ContestDto
 import com.saveourtool.save.entities.Organization
-import com.saveourtool.save.entities.Project
+import com.saveourtool.save.entities.ProjectDto
 import com.saveourtool.save.execution.ExecutionDto
 import com.saveourtool.save.execution.ExecutionStatus.FINISHED
 import com.saveourtool.save.execution.ExecutionStatus.PENDING
@@ -48,7 +48,7 @@ import kotlinx.coroutines.runBlocking
 class SaveBackendTest {
     @Test
     @Timeout(TEST_TIMEOUT_MINUTES, unit = MINUTES)
-    fun `private tests`(@TempDir tmpDir: Path) {
+    fun `private tests`() {
         with(client) {
             runBlocking {
                 doTest(PRIVATE_TESTS)
@@ -58,7 +58,7 @@ class SaveBackendTest {
 
     @Test
     @Timeout(TEST_TIMEOUT_MINUTES, unit = MINUTES)
-    fun `public tests`(@TempDir tmpDir: Path) {
+    fun `public tests`() {
         with(client) {
             runBlocking {
                 doTest(PUBLIC_TESTS)
@@ -68,7 +68,7 @@ class SaveBackendTest {
 
     @Test
     @Timeout(TEST_TIMEOUT_MINUTES, unit = MINUTES)
-    fun `contest mode`(@TempDir tmpDir: Path) {
+    fun `contest mode`() {
         with(client) {
             runBlocking {
                 val contest = organization.listActiveContests(project.name)
@@ -170,7 +170,7 @@ class SaveBackendTest {
 
         private lateinit var client: SaveCloudClientEx
         private lateinit var organization: Organization
-        private lateinit var project: Project
+        private lateinit var project: ProjectDto
         private lateinit var files: List<FileInfo>
 
         @Suppress("TOO_LONG_FUNCTION")
