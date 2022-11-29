@@ -9,7 +9,7 @@ on:
     # This is because the latest user who creates the schedule trigger will be
     # the actor for the schedule workflow, see
     # <https://github.com/orgs/community/discussions/25067> for more details.
-    - cron: 30 16 * * SAT # 16:30 UTC (19:30 MSK), each Saturday.
+    - cron: 30 16 * * * # 16:30 UTC (19:30 MSK), daily.
 
 jobs:
   test:
