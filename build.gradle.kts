@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version "1.7.22"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.22"
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.3"
+    `maven-publish`
 }
 
 repositories {
@@ -105,4 +106,25 @@ diktat {
      * Leave enabled to see the number of errors in the output of Gradle.
      */
     debug = true
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/saveourtool/save-backend-tests")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            groupId = "com.saveourtool.save"
+            version = "0.0.1-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
 }
