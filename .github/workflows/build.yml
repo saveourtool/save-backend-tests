@@ -38,6 +38,17 @@ jobs:
           gradle-version: wrapper
           arguments: |
             build
+            -x test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Publish a snapshot'
+        id: publish
+        if: ${{ github.event_name == 'push' && github.ref_type == 'branch' && github.ref == 'refs/heads/master' }}
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
             publish
             -x test
         env:
