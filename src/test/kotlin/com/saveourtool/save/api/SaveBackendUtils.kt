@@ -5,7 +5,7 @@
 
 package com.saveourtool.save.api
 
-import com.saveourtool.save.testsuite.TestSuiteDto
+import com.saveourtool.save.testsuite.TestSuiteVersioned
 import org.assertj.core.api.Assumptions.assumeThat
 
 private const val DEFAULT_AUTHORIZATION_SOURCE = "basic"
@@ -105,7 +105,7 @@ internal val testLanguage: String?
  * @see testVersion
  * @see testLanguage
  */
-internal fun List<TestSuiteDto>.filtered(): List<TestSuiteDto> {
+internal fun List<TestSuiteVersioned>.filtered(): List<TestSuiteVersioned> {
     val selectById = testSuiteIds.isNotEmpty()
     val selectByVersionAndLanguage = testVersion != null && testLanguage != null
 
@@ -114,7 +114,7 @@ internal fun List<TestSuiteDto>.filtered(): List<TestSuiteDto> {
         .isTrue
 
     @Suppress("NO_BRACES_IN_CONDITIONALS_AND_LOOPS")
-    val predicate: TestSuiteDto.() -> Boolean = when {
+    val predicate: TestSuiteVersioned.() -> Boolean = when {
         selectById -> {
             {
                 val id0 = id
