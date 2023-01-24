@@ -93,6 +93,7 @@ class SaveBackendTest {
 
         val testSuites = organization.listTestSuites()
             .getOrHandle(SaveCloudError::fail)
+            .withinOrganization()
             .filtered()
             .assertNonEmpty("No test suites found")
 
@@ -103,7 +104,6 @@ class SaveBackendTest {
             ),
             testSuiteIds = testSuites.asSequence()
                 .map(TestSuiteVersioned::id)
-                .filterNotNull()
                 .toList(),
             fileIds = files.map(FileDto::requiredId),
             sdk = Jdk(version = "11"),

@@ -133,3 +133,12 @@ internal fun List<TestSuiteVersioned>.filtered(): List<TestSuiteVersioned> {
 
     return asSequence().filter(predicate).toList()
 }
+
+/**
+ * @return the list of test suites within the organization identified with
+ *   [organizationName].
+ */
+internal fun List<TestSuiteVersioned>.withinOrganization(): List<TestSuiteVersioned> =
+    filter { testSuite ->
+        testSuite.organizationName == organizationName
+    }
