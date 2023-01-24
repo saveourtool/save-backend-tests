@@ -102,6 +102,7 @@ class SaveBackendFastTest {
                     .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
                     .getOrHandle(SaveCloudError::fail)
+                    .withinOrganization()
                     .assertNonEmpty("No test suites found")
 
                 logger.debug("Found ${testSuites.size} test suite(s):")
@@ -125,6 +126,7 @@ class SaveBackendFastTest {
                     .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
                     .getOrHandle(SaveCloudError::fail)
+                    .withinOrganization()
                     .filtered()
                     .assertNonEmpty("No test suites found")
 
