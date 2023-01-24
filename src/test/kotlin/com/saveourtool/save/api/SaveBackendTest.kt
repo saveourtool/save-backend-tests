@@ -8,14 +8,15 @@ import com.saveourtool.save.api.github.DownloadedAsset
 import com.saveourtool.save.api.github.GitHubClient
 import com.saveourtool.save.api.github.GitHubProject
 import com.saveourtool.save.api.github.div
-import com.saveourtool.save.domain.FileInfo
 import com.saveourtool.save.domain.Jdk
 import com.saveourtool.save.domain.ProjectCoordinates
 import com.saveourtool.save.entities.ContestDto
+import com.saveourtool.save.entities.FileDto
 import com.saveourtool.save.entities.Organization
 import com.saveourtool.save.entities.ProjectDto
 import com.saveourtool.save.execution.ExecutionDto
 import com.saveourtool.save.execution.ExecutionStatus.FINISHED
+import com.saveourtool.save.execution.ExecutionStatus.INITIALIZATION
 import com.saveourtool.save.execution.ExecutionStatus.PENDING
 import com.saveourtool.save.execution.ExecutionStatus.RUNNING
 import com.saveourtool.save.execution.TestingType
@@ -23,7 +24,7 @@ import com.saveourtool.save.execution.TestingType.CONTEST_MODE
 import com.saveourtool.save.execution.TestingType.PRIVATE_TESTS
 import com.saveourtool.save.execution.TestingType.PUBLIC_TESTS
 import com.saveourtool.save.request.CreateExecutionRequest
-import com.saveourtool.save.testsuite.TestSuiteDto
+import com.saveourtool.save.testsuite.TestSuiteVersioned
 import com.saveourtool.save.utils.getLogger
 import arrow.core.getOrHandle
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
@@ -101,10 +102,10 @@ class SaveBackendTest {
                 projectName,
             ),
             testSuiteIds = testSuites.asSequence()
-                .map(TestSuiteDto::id)
+                .map(TestSuiteVersioned::id)
                 .filterNotNull()
                 .toList(),
-            files = files.map(FileInfo::key),
+            fileIds = files.map(FileDto::requiredId),
             sdk = Jdk(version = "11"),
             testingType = testingType,
             contestName = contest?.name
@@ -121,7 +122,7 @@ class SaveBackendTest {
                 execution = getExecutionById(executionId)
                     .getOrHandle(SaveCloudError::fail)
                 delay(POLL_DELAY_MILLIS)
-            } while (execution.status in arrayOf(PENDING, RUNNING))
+            } while (execution.status in arrayOf(INITIALIZATION, PENDING, RUNNING))
         }
         @Suppress("FLOAT_IN_ACCURATE_CALCULATIONS")
         logger.debug("The execution (id = $executionId) has completed in ${nanos / 1000L / 1e3} ms.")
@@ -171,7 +172,7 @@ class SaveBackendTest {
         private lateinit var client: SaveCloudClientEx
         private lateinit var organization: Organization
         private lateinit var project: ProjectDto
-        private lateinit var files: List<FileInfo>
+        private lateinit var files: List<FileDto>
 
         @Suppress("TOO_LONG_FUNCTION")
         @JvmStatic
@@ -239,7 +240,7 @@ class SaveBackendTest {
             with(client) {
                 runBlocking {
                     files.forEach { file ->
-                        organization.deleteFile(projectName, file.key)
+                        deleteFile(file.requiredId())
                             .getOrHandle(SaveCloudError::fail)
                     }
                 }

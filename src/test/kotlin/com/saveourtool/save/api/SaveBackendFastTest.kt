@@ -4,7 +4,7 @@ import com.saveourtool.save.api.assertions.assertNonEmpty
 import com.saveourtool.save.api.assertions.assertNonNull
 import com.saveourtool.save.api.assertions.fail
 import com.saveourtool.save.api.errors.SaveCloudError
-import com.saveourtool.save.testsuite.TestSuiteDto
+import com.saveourtool.save.testsuite.TestSuiteVersioned
 import com.saveourtool.save.utils.getLogger
 import arrow.core.flatMap
 import arrow.core.getOrHandle
@@ -20,6 +20,8 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.UtcOffset.Companion.ZERO
+import kotlinx.datetime.toInstant
 
 @Suppress("Destructure")
 class SaveBackendFastTest {
@@ -103,7 +105,7 @@ class SaveBackendFastTest {
                     .assertNonEmpty("No test suites found")
 
                 logger.debug("Found ${testSuites.size} test suite(s):")
-                testSuites.asSequence().sortedBy(TestSuiteDto::id).forEach { testSuite ->
+                testSuites.asSequence().sortedBy(TestSuiteVersioned::id).forEach { testSuite ->
                     logger.debug("\t${testSuite.id}: $testSuite")
                 }
             }
@@ -127,7 +129,7 @@ class SaveBackendFastTest {
                     .assertNonEmpty("No test suites found")
 
                 logger.debug("Filtered ${testSuites.size} test suite(s):")
-                testSuites.asSequence().sortedBy(TestSuiteDto::id).forEach { testSuite ->
+                testSuites.asSequence().sortedBy(TestSuiteVersioned::id).forEach { testSuite ->
                     logger.debug("\t${testSuite.id}: $testSuite")
                 }
             }
@@ -157,7 +159,7 @@ class SaveBackendFastTest {
 
                 logger.debug("Found ${files.size} file(s):")
                 files.forEachIndexed { index, file ->
-                    val fileAgeMillis = System.currentTimeMillis() - file.key.uploadedMillis
+                    val fileAgeMillis = System.currentTimeMillis() - file.uploadedTime.toInstant(ZERO).toEpochMilliseconds()
                     val fileAge = Duration.ofMillis(fileAgeMillis)
                     assertThat(fileAge.isNegative)
                         .describedAs("The age of ${file.name} is negative")
