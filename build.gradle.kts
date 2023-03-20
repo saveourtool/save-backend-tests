@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.8.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.3"
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
     `maven-publish`
 }
 
