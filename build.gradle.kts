@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-internal val coroutinesVersion = "1.7.1"
+internal val coroutinesVersion = "1.7.2"
 internal val ktorVersion = "2.3.2"
 internal val saveVersion = "0.3.2"
 internal val junitVersion = "5.9.3"
