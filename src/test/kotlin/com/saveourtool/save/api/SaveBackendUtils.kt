@@ -10,7 +10,7 @@ import org.assertj.core.api.Assumptions.assumeThat
 
 private const val DEFAULT_AUTHORIZATION_SOURCE = "basic"
 private const val DEFAULT_BACKEND_URL = "http://localhost:5800"
-private const val DEFAULT_ORGANIZATION_NAME = "CQFN.org"
+private const val DEFAULT_ORGANIZATION_NAME = "saveourtool"
 private const val DEFAULT_PASSWORD = ""
 private const val DEFAULT_PROJECT_NAME = "Diktat-Integration"
 private const val DEFAULT_TEST_LANGUAGE = "Kotlin"
@@ -123,7 +123,7 @@ internal fun List<TestSuiteVersioned>.filtered(): List<TestSuiteVersioned> {
         }
 
         selectByVersionAndLanguage -> {
-            { version == testVersion && language == testLanguage }
+            { hasVersion(testVersion) && language == testLanguage }
         }
 
         else -> {
@@ -142,3 +142,13 @@ internal fun List<TestSuiteVersioned>.withinOrganization(): List<TestSuiteVersio
     filter { testSuite ->
         testSuite.organizationName == organizationName
     }
+
+/**
+ * If [version] is a branch name, the test suite version returned by the
+ * back-end may look like `<branch name> (<commit hash>)`.
+ *
+ * @param version git tag, branch name, or commit hash.
+ */
+private fun TestSuiteVersioned.hasVersion(version: String?): Boolean =
+    this.version == version
+            || (version != null && this.version.matches(Regex("""^\Q$version\E\h+\([0-9A-Fa-f]+\)$""")))
