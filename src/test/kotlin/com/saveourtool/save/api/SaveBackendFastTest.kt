@@ -5,9 +5,10 @@ import com.saveourtool.save.api.assertions.assertNonNull
 import com.saveourtool.save.api.assertions.fail
 import com.saveourtool.save.api.errors.SaveCloudError
 import com.saveourtool.save.testsuite.TestSuiteVersioned
+import com.saveourtool.save.utils.AUTHORIZATION_SOURCE
 import com.saveourtool.save.utils.getLogger
 import arrow.core.flatMap
-import arrow.core.getOrHandle
+import arrow.core.getOrElse
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.client.request.headers
@@ -36,7 +37,7 @@ class SaveBackendFastTest {
             basic {
                 sendWithoutRequest { requestBuilder ->
                     requestBuilder.headers {
-                        this["X-Authorization-Source"] = authorizationSource
+                        this[AUTHORIZATION_SOURCE] = authorizationSource
                     }
 
                     true
@@ -55,7 +56,7 @@ class SaveBackendFastTest {
         with(client) {
             runBlocking {
                 val organizations = listOrganizations()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .assertNonEmpty("No organizations found")
 
                 logger.debug("Found ${organizations.size} organization(s):")
@@ -72,13 +73,13 @@ class SaveBackendFastTest {
         with(client) {
             runBlocking {
                 val projects = listOrganizations()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { organization ->
                         organization.name == organizationName
                     }
                     .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listProjects()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .assertNonEmpty("No projects found")
 
                 logger.debug("Found ${projects.size} project(s):")
@@ -95,13 +96,13 @@ class SaveBackendFastTest {
         with(client) {
             runBlocking {
                 val testSuites = listOrganizations()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { organization ->
                         organization.name == organizationName
                     }
                     .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .withinOrganization()
                     .assertNonEmpty("No test suites found")
 
@@ -119,13 +120,13 @@ class SaveBackendFastTest {
         with(client) {
             runBlocking {
                 val testSuites = listOrganizations()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { organization ->
                         organization.name == organizationName
                     }
                     .assertNonNull("An organization named \"$organizationName\" not found or not accessible")
                     .listTestSuites()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .withinOrganization()
                     .filtered()
                     .assertNonEmpty("No test suites found")
@@ -144,20 +145,20 @@ class SaveBackendFastTest {
         with(client) {
             runBlocking {
                 val organization = listOrganizations()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { organization ->
                         organization.name == organizationName
                     }.assertNonNull("An organization named \"$organizationName\" not found or not accessible")
 
                 val project = organization.listProjects()
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { project ->
                         project.name == projectName
                     }
                     .assertNonNull("A project named \"$projectName\" not found or not accessible")
 
                 val files = organization.listFiles(project.name)
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
 
                 logger.debug("Found ${files.size} file(s):")
                 files.forEachIndexed { index, file ->
@@ -190,7 +191,8 @@ class SaveBackendFastTest {
 
                         organization.listActiveContests(project.name)
                     }
-                }.getOrHandle(SaveCloudError::fail)
+                }
+                    .getOrElse(SaveCloudError::fail)
                     .assertNonEmpty("No contests found")
 
                 logger.debug("Found ${contests.size} contest(s):")

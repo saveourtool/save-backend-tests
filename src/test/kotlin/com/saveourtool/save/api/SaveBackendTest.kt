@@ -10,10 +10,10 @@ import com.saveourtool.save.api.github.GitHubProject
 import com.saveourtool.save.api.github.div
 import com.saveourtool.save.domain.Jdk
 import com.saveourtool.save.domain.ProjectCoordinates
-import com.saveourtool.save.entities.ContestDto
 import com.saveourtool.save.entities.FileDto
-import com.saveourtool.save.entities.Organization
+import com.saveourtool.save.entities.OrganizationDto
 import com.saveourtool.save.entities.ProjectDto
+import com.saveourtool.save.entities.contest.ContestDto
 import com.saveourtool.save.execution.ExecutionDto
 import com.saveourtool.save.execution.ExecutionStatus.FINISHED
 import com.saveourtool.save.execution.ExecutionStatus.INITIALIZATION
@@ -25,8 +25,9 @@ import com.saveourtool.save.execution.TestingType.PRIVATE_TESTS
 import com.saveourtool.save.execution.TestingType.PUBLIC_TESTS
 import com.saveourtool.save.request.CreateExecutionRequest
 import com.saveourtool.save.testsuite.TestSuiteVersioned
+import com.saveourtool.save.utils.AUTHORIZATION_SOURCE
 import com.saveourtool.save.utils.getLogger
-import arrow.core.getOrHandle
+import arrow.core.getOrElse
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.client.request.headers
@@ -73,7 +74,7 @@ class SaveBackendTest {
         with(client) {
             runBlocking {
                 val contest = organization.listActiveContests(project.name)
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                     .firstOrNull { contest ->
                         contest.name == contestName
                     }
@@ -92,7 +93,7 @@ class SaveBackendTest {
         require((testingType == CONTEST_MODE) == (contest != null))
 
         val testSuites = organization.listTestSuites()
-            .getOrHandle(SaveCloudError::fail)
+            .getOrElse(SaveCloudError::fail)
             .withinOrganization()
             .filtered()
             .assertNonEmpty("No test suites found")
@@ -112,7 +113,7 @@ class SaveBackendTest {
         )
 
         val executionId = submitExecution(executionRequest)
-            .getOrHandle(SaveCloudError::fail)
+            .getOrElse(SaveCloudError::fail)
             .id
         logger.debug("Waiting for execution (id = $executionId) to complete...")
 
@@ -120,7 +121,7 @@ class SaveBackendTest {
         val nanos = measureNanoTime {
             do {
                 execution = getExecutionById(executionId)
-                    .getOrHandle(SaveCloudError::fail)
+                    .getOrElse(SaveCloudError::fail)
                 delay(POLL_DELAY_MILLIS)
             } while (execution.status in arrayOf(INITIALIZATION, PENDING, RUNNING))
         }
@@ -170,7 +171,7 @@ class SaveBackendTest {
                 ).toBooleanStrict()
 
         private lateinit var client: SaveCloudClientEx
-        private lateinit var organization: Organization
+        private lateinit var organization: OrganizationDto
         private lateinit var project: ProjectDto
         private lateinit var files: List<FileDto>
 
@@ -185,7 +186,7 @@ class SaveBackendTest {
                 basic {
                     sendWithoutRequest { requestBuilder ->
                         requestBuilder.headers {
-                            this["X-Authorization-Source"] = authorizationSource
+                            this[AUTHORIZATION_SOURCE] = authorizationSource
                         }
 
                         true
@@ -200,13 +201,13 @@ class SaveBackendTest {
             with(client) {
                 runBlocking {
                     organization = listOrganizations()
-                        .getOrHandle(SaveCloudError::fail)
+                        .getOrElse(SaveCloudError::fail)
                         .firstOrNull { organization ->
                             organization.name == organizationName
                         }.assertNonNull("An organization named \"$organizationName\" not found or not accessible")
 
                     project = organization.listProjects()
-                        .getOrHandle(SaveCloudError::fail)
+                        .getOrElse(SaveCloudError::fail)
                         .firstOrNull { project ->
                             project.name == projectName
                         }
@@ -225,7 +226,7 @@ class SaveBackendTest {
                                 asset.localFile,
                                 asset.contentType,
                                 stripVersionFromName = true
-                            ).getOrHandle(SaveCloudError::fail)
+                            ).getOrElse(SaveCloudError::fail)
                         }
 
                         else -> emptyList()
@@ -241,7 +242,7 @@ class SaveBackendTest {
                 runBlocking {
                     files.forEach { file ->
                         deleteFile(file.requiredId())
-                            .getOrHandle(SaveCloudError::fail)
+                            .getOrElse(SaveCloudError::fail)
                     }
                 }
             }
@@ -254,7 +255,7 @@ class SaveBackendTest {
             with(GitHubClient()) {
                 projects.flatMap { project ->
                     project.downloadTo(downloadDir)
-                        .getOrHandle(SaveCloudError::fail)
+                        .getOrElse(SaveCloudError::fail)
                 }
             }
     }

@@ -13,7 +13,7 @@ import com.saveourtool.save.api.http.getAndOpenChannel
 import com.saveourtool.save.api.io.writeChannel
 import com.saveourtool.save.utils.getLogger
 import arrow.core.Either
-import arrow.core.getOrHandle
+import arrow.core.getOrElse
 import arrow.core.left
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
@@ -92,7 +92,7 @@ internal class DefaultGitHubClient(
                 val bytesWritten: Long
                 val nanos = measureNanoTime {
                     assetPath.writeChannel(ioContext).use {
-                        bytesWritten = openChannel(asset).getOrHandle { error ->
+                        bytesWritten = openChannel(asset).getOrElse { error ->
                             return error.left()
                         }.copyTo(this)
                     }
