@@ -10,6 +10,12 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        content {
+            includeGroup("com.saveourtool.save")
+        }
+    }
 }
 
 internal val coroutinesVersion = "1.7.2"
