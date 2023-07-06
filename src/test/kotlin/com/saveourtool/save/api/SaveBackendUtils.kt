@@ -150,5 +150,5 @@ internal fun List<TestSuiteVersioned>.withinOrganization(): List<TestSuiteVersio
  * @param version git tag, branch name, or commit hash.
  */
 private fun TestSuiteVersioned.hasVersion(version: String?): Boolean =
-    this.version == version
-            || (version != null && this.version.matches(Regex("""^\Q$version\E\h+\([0-9A-Fa-f]+\)$""")))
+    this.version == version ||
+            (version != null && this.version.matches(Regex("""^\Q$version\E\h+\([0-9A-Fa-f]+\)$""")))
