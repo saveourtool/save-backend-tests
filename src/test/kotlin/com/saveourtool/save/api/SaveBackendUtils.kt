@@ -152,7 +152,7 @@ private fun TestSuiteVersioned.hasVersion(version: String?): Boolean =
  * @return env value or property value if env is missed.
  */
 private fun getenvOrProperty(name: String): String? =
-        System.getenv(name) ?: System.getProperty(name)
+    System.getenv(name) ?: System.getProperty(name)
 
 /**
  * @param name env name or property name.
