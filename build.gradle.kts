@@ -87,7 +87,6 @@ tasks.withType<Test> {
     sequenceOf(
         "save-cloud.backend.url",
         "save-cloud.user",
-        "save-cloud.user.auth.source",
         "save-cloud.password",
         "save-cloud.test.suite.ids",
         "save-cloud.test.version",

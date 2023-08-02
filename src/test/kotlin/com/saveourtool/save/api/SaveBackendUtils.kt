@@ -8,7 +8,6 @@ package com.saveourtool.save.api
 import com.saveourtool.save.testsuite.TestSuiteVersioned
 import org.assertj.core.api.Assumptions.assumeThat
 
-private const val DEFAULT_AUTHORIZATION_SOURCE = "basic"
 private const val DEFAULT_BACKEND_URL = "http://localhost:5800"
 private const val DEFAULT_ORGANIZATION_NAME = "saveourtool"
 private const val DEFAULT_PASSWORD = ""
@@ -21,7 +20,7 @@ internal const val TEST_TIMEOUT_MINUTES = 20L
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val backendUrl: String
     get() {
-        val backendUrlOrEmpty = System.getProperty("save-cloud.backend.url", DEFAULT_BACKEND_URL)
+        val backendUrlOrEmpty = getenvOrProperty("save-cloud.backend.url", DEFAULT_BACKEND_URL)
 
         return when {
             backendUrlOrEmpty.isEmpty() -> DEFAULT_BACKEND_URL
@@ -32,7 +31,7 @@ internal val backendUrl: String
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val user: String
     get() =
-        System.getProperty("save-cloud.user", DEFAULT_USER)
+        getenvOrProperty("save-cloud.user", DEFAULT_USER)
 
 /**
  * @return either the password or the _personal access token_.
@@ -40,12 +39,7 @@ internal val user: String
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val passwordOrToken: String
     get() =
-        System.getProperty("save-cloud.password", DEFAULT_PASSWORD)
-
-@Suppress("CUSTOM_GETTERS_SETTERS")
-internal val authorizationSource: String
-    get() =
-        System.getProperty("save-cloud.user.auth.source", DEFAULT_AUTHORIZATION_SOURCE)
+        getenvOrProperty("save-cloud.password", DEFAULT_PASSWORD)
 
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val organizationName: String
@@ -55,7 +49,7 @@ internal val organizationName: String
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val projectName: String
     get() =
-        System.getProperty("save-cloud.project.name", DEFAULT_PROJECT_NAME)
+        getenvOrProperty("save-cloud.project.name", DEFAULT_PROJECT_NAME)
 
 @Suppress(
     "NO_CORRESPONDING_PROPERTY",
@@ -63,7 +57,7 @@ internal val projectName: String
 )
 internal val testSuiteIds: Set<Long>
     get() {
-        val rawTestSuiteIds = System.getProperty("save-cloud.test.suite.ids")
+        val rawTestSuiteIds = getenvOrProperty("save-cloud.test.suite.ids")
             ?: return emptySet()
 
         return rawTestSuiteIds
@@ -77,7 +71,7 @@ internal val testSuiteIds: Set<Long>
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val testVersion: String?
     get() {
-        val rawTestVersion = System.getProperty("save-cloud.test.version", DEFAULT_TEST_VERSION)
+        val rawTestVersion = getenvOrProperty("save-cloud.test.version", DEFAULT_TEST_VERSION)
 
         return when {
             rawTestVersion.isEmpty() -> null
@@ -89,7 +83,7 @@ internal val testVersion: String?
 @Suppress("CUSTOM_GETTERS_SETTERS")
 internal val testLanguage: String?
     get() {
-        val rawTestLanguage = System.getProperty("save-cloud.test.language", DEFAULT_TEST_LANGUAGE)
+        val rawTestLanguage = getenvOrProperty("save-cloud.test.language", DEFAULT_TEST_LANGUAGE)
 
         return when {
             rawTestLanguage.isEmpty() -> null
@@ -152,3 +146,17 @@ internal fun List<TestSuiteVersioned>.withinOrganization(): List<TestSuiteVersio
 private fun TestSuiteVersioned.hasVersion(version: String?): Boolean =
     this.version == version ||
             (version != null && this.version.matches(Regex("""^\Q$version\E\h+\([0-9A-Fa-f]+\)$""")))
+
+/**
+ * @param name env name or property name.
+ * @return env value or property value if env is missed.
+ */
+private fun getenvOrProperty(name: String): String? =
+        System.getenv(name) ?: System.getProperty(name)
+
+/**
+ * @param name env name or property name.
+ * @param defaultValue value when env and property are missed.
+ * @return env value or property value if env is missed.
+ */
+private fun getenvOrProperty(name: String, defaultValue: String): String = getenvOrProperty(name) ?: defaultValue

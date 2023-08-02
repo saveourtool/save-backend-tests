@@ -5,13 +5,11 @@ import com.saveourtool.save.api.assertions.assertNonNull
 import com.saveourtool.save.api.assertions.fail
 import com.saveourtool.save.api.errors.SaveCloudError
 import com.saveourtool.save.testsuite.TestSuiteVersioned
-import com.saveourtool.save.utils.AUTHORIZATION_SOURCE
 import com.saveourtool.save.utils.getLogger
 import arrow.core.flatMap
 import arrow.core.getOrElse
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
-import io.ktor.client.request.headers
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,13 +33,7 @@ class SaveBackendFastTest {
             requestTimeoutMillis = SECONDS.toMillis(500L)
         ) {
             basic {
-                sendWithoutRequest { requestBuilder ->
-                    requestBuilder.headers {
-                        this[AUTHORIZATION_SOURCE] = authorizationSource
-                    }
-
-                    true
-                }
+                sendWithoutRequest { true }
 
                 credentials {
                     BasicAuthCredentials(username = user, password = passwordOrToken)
