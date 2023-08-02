@@ -25,12 +25,10 @@ import com.saveourtool.save.execution.TestingType.PRIVATE_TESTS
 import com.saveourtool.save.execution.TestingType.PUBLIC_TESTS
 import com.saveourtool.save.request.CreateExecutionRequest
 import com.saveourtool.save.testsuite.TestSuiteVersioned
-import com.saveourtool.save.utils.AUTHORIZATION_SOURCE
 import com.saveourtool.save.utils.getLogger
 import arrow.core.getOrElse
 import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
-import io.ktor.client.request.headers
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.api.AfterAll
@@ -184,13 +182,7 @@ class SaveBackendTest {
                 requestTimeoutMillis = SECONDS.toMillis(500L)
             ) {
                 basic {
-                    sendWithoutRequest { requestBuilder ->
-                        requestBuilder.headers {
-                            this[AUTHORIZATION_SOURCE] = authorizationSource
-                        }
-
-                        true
-                    }
+                    sendWithoutRequest { true }
 
                     credentials {
                         BasicAuthCredentials(username = user, password = passwordOrToken)

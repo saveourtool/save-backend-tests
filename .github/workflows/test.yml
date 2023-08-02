@@ -49,9 +49,8 @@ jobs:
           gradle-version: wrapper
           arguments: |
             -Dsave-cloud.backend.url=https://saveourtool.com
-            -Dsave-cloud.user=github@${{ secrets.SAVE_CLOUD_USER }}
+            -Dsave-cloud.user=${{ secrets.SAVE_CLOUD_USER }}
             -Dsave-cloud.password=${{ secrets.SAVE_CLOUD_PASSWORD }}
-            -Dsave-cloud.user.auth.source=github
             -Dsave-cloud.project.name=Diktat-Integration
             -Dsave-cloud.contest.name=Integration-Tests
             -Dsave-cloud.test.version=save-integration-test
