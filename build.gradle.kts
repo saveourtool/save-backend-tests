@@ -21,7 +21,7 @@ repositories {
 internal val coroutinesVersion = "1.7.3"
 internal val ktorVersion = "2.3.5"
 internal val saveVersion = "0.3.3"
-internal val junitVersion = "5.10.0"
+internal val junitVersion = "5.10.1"
 internal val assertjVersion = "3.24.2"
 
 dependencies {
