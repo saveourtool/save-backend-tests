@@ -17,7 +17,7 @@ jobs:
 
       - id: diktat
         name: 'diKTat Check'
-        uses: saveourtool/benedikt@v1
+        uses: saveourtool/benedikt@v2
         with:
           input-paths: |
             **/*.kt
