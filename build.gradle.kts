@@ -22,7 +22,7 @@ internal val coroutinesVersion = "1.7.3"
 internal val ktorVersion = "2.3.7"
 internal val saveVersion = "0.3.3"
 internal val junitVersion = "5.10.2"
-internal val assertjVersion = "3.25.2"
+internal val assertjVersion = "3.25.3"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
