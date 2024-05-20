@@ -18,7 +18,7 @@ repositories {
     }
 }
 
-internal val coroutinesVersion = "1.8.0"
+internal val coroutinesVersion = "1.8.1"
 internal val ktorVersion = "2.3.10"
 internal val saveVersion = "0.3.3"
 internal val junitVersion = "5.10.2"
