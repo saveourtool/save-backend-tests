@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.0.20"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
     `maven-publish`
